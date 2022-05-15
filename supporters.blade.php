@@ -333,7 +333,7 @@ input[type="number"] {
                     <span class="p-2" style="background-color: green; color: white; font-size: 20px; border-radius: 15px"><strong>Paid Visa Card: {{ number_format($visaCardSuccessTotal, 0, ".", ", ") }}<strong></span> 
                     </div>
                     <div class="text-left mb-3">
-                        <a class="btn btn-primary" href="{{ url('/admin/dashboard/unpaid-supporters')}}">Unpaid Supporters</a>
+                        <a class="btn btn-primary" href="{{ url('/admin/dashboard/supporters/unpaid')}}">Unpaid Supporters</a>
                     {{-- <span class="p-2" style="background-color: #e20000; color: white; font-size: 20px; border-radius: 15px"><strong>Unpaid Supporters<strong></span>  --}}
                     </div>
 

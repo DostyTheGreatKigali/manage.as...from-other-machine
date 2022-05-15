@@ -36,7 +36,7 @@ Route::get('dashboard/supporters/regional', 'SupportersController@regionalSuppor
 Route::post('dashboard/supporters/update-card-printed', 'SupportersController@updateCardPrinted');
 Route::get('dashboard/transactions', 'TransactionsController@showTransactions');
 Route::get('dashboard/charts', 'HomeController@showChart');
-Route::get('dashboard/unpaid-supporters', 'HomeController@showChart');
+Route::get('dashboard/supporters/unpaid', 'SupportersController@showUnpaidSupporters');
     
 });
 
