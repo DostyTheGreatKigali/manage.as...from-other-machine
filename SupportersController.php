@@ -34,7 +34,9 @@ class SupportersController extends Controller
                     ->orWhere('status', "Completed");// DIRECT DEBIT
                 });
     
-    $ghanaTotalRevenue =     $ghanaBaseTransactions->sum('amount');
+    // $ghanaTotalRevenue =     $ghanaBaseTransactions->sum('amount');
+
+    // $ghanaTotalKotokoVISACardRevenue = count($ghanaBaseTransactions->get());
 
     // dd($ghanaTotalRevenue);
 
@@ -57,16 +59,54 @@ class SupportersController extends Controller
                     ->orWhere('status', "Completed");// DIRECT DEBIT
                 });
     
-    $outsideTotalRevenue = $outsideBaseTransactions->sum('usd_to_ghs');
+    // $outsideTotalRevenue = $outsideBaseTransactions->sum('usd_to_ghs');
+
+    // $outsideTotalKotokoVISACardRevenue = count($outsideBaseTransactions->get());
+
 
     //dd($outsideTotalRevenue);
 
-        $totalKotokoVISACardRevenue = sprintf('%.2f', $ghanaTotalRevenue + $outsideTotalRevenue);
+        // $totalKotokoVISACardRevenue = sprintf('%.2f', $ghanaTotalRevenue + $outsideTotalRevenue);
         // dd($totalKotokoVISACardRevenue);
+
+        // array_push($myArr, 5, 8);
+        // print_r($myArr); 
+
+    // $totalVisaCardPaidSupporters = $ghanaTotalKotokoVISACardRevenue + $outsideTotalKotokoVISACardRevenue;
+    // dd(gettype(json_decode($ghanaBaseTransactions->get())));
+    // dd(gettype(json_decode($ghanaBaseTransactions->get())));
+    // $ghanaPiad = json_decode($ghanaBaseTransactions->get());
+    // $outsidePiad = json_decode($outsideBaseTransactions->get());
+
+    // MERGE TWO OR MORE ARRAYS
+    // https://www.php.net/manual/en/function.array-merge.php
+    // https://www.hashbangcode.com/article/append-one-array-another-php
+    // $totalVisaCardPaidSupporters = array_merge($ghanaPiad, $outsidePiad);
+    // dd($totalVisaCardPaidSupporters);
         
         $dateIsValid = FALSE;
 
+
         $allSupporters = Supporter::whereIn('id', Transaction::where('response', 'not like', '%"newMandateId"%')
+        ->where('status', '!=' , 'Refunded')
+        ->where('status', '!=' , 'Recheck Failed')
+        ->whereNotNull('status')
+        ->where(function($query) {
+        //  $query->orWhere('query_response', 'like', '%"responseCode":"01"%')// UNIWALLET
+        // ->orWhere('status', "Completed")// DIRECT DEBIT
+        // ->orWhere('query_response', 'like', '%"status":"success"%'); // PAYSTACK
+        $query->orWhere('query_response', 'like', '%"responseCode":"01"%')// UNIWALLET , DIRECT DEBIT
+        ->orWhere('query_response', 'like', '%"status":"success"%')// PAYSTACK
+        ->orWhere('query_response', 'like', '%"code":200%')// ZEEPAY
+        ->orWhere('status', "Completed");// DIRECT DEBIT
+        
+        })
+        ->distinct('supporter_id')->pluck('supporter_id')->all());
+
+        // dd($allSupporters);
+
+        $allSupportersVisaCard = Supporter::whereIn('id', Transaction::where('type', '=' , 'card')
+        ->where('response', 'not like', '%"newMandateId"%')
         ->where('status', '!=' , 'Refunded')
         ->where('status', '!=' , 'Recheck Failed')
         ->whereNotNull('status')
@@ -84,7 +124,7 @@ class SupportersController extends Controller
         // ->limit(5)
         // ->get();
 
-    //    dd($allSupporters);
+    //    dd($allSupportersVisaCard);
 
         // set_time_limit(300);
         // $allSupporters = Supporter::select('*')->where('subscribed', TRUE);
@@ -147,6 +187,7 @@ class SupportersController extends Controller
 
                 if ($dateIsValid) {
                     $allSupporters = $allSupporters->whereBetween('created_at', [$start_date->format('Y-m-d H:i:s'), $end_date->format('Y-m-d H:i:s')]);    
+                    $allSupportersVisaCard = $allSupportersVisaCard->whereBetween('created_at', [$start_date->format('Y-m-d H:i:s'), $end_date->format('Y-m-d H:i:s')]);    
                 }
 
          
@@ -163,6 +204,7 @@ class SupportersController extends Controller
             $country = $request->country;
             // dd($region);
             $allSupporters = $allSupporters->where('country', $country);
+            $allSupportersVisaCard = $allSupportersVisaCard->where('country', $country);
             // dd($allSupporters->get());
         }
 
@@ -171,6 +213,7 @@ class SupportersController extends Controller
             $region = $request->region;
             // dd($region);
             $allSupporters = $allSupporters->where('region', $region);
+            $allSupportersVisaCard = $allSupportersVisaCard->where('region', $region);
             // dd($allSupporters->get());
         }
         // $region = $request->region;
@@ -186,6 +229,10 @@ class SupportersController extends Controller
                 $q->where('city', 'iLIKE', '%'.$city.'%');
                 // $q->orwhere('lastName', 'LIKE', '%'.$keyword.'%');
             });
+            $allSupportersVisaCard = $allSupportersVisaCard->where(function ($q) use($city) {               
+                $q->where('city', 'iLIKE', '%'.$city.'%');
+                // $q->orwhere('lastName', 'LIKE', '%'.$keyword.'%');
+            });
             // dd($allSupporters->get());
         }
 
@@ -195,6 +242,10 @@ class SupportersController extends Controller
             // dd($city);
             // $allSupporters = $allSupporters->where('suburb', 'like', '%' . $suburb . '%');
             $allSupporters = $allSupporters->where(function ($q) use($suburb) {               
+                $q->where('suburb', 'iLIKE', '%'.$suburb.'%');
+                // $q->orwhere('lastName', 'LIKE', '%'.$keyword.'%');
+            });
+            $allSupportersVisaCard = $allSupportersVisaCard->where(function ($q) use($suburb) {               
                 $q->where('suburb', 'iLIKE', '%'.$suburb.'%');
                 // $q->orwhere('lastName', 'LIKE', '%'.$keyword.'%');
             });
@@ -213,6 +264,7 @@ class SupportersController extends Controller
                 // dd("The age pairing is wrong");
                 // dd($minAge . " is less than" . $maxAge);
                 $allSupporters = $allSupporters->whereBetween('age', [$minAge, $maxAge]);
+                $allSupportersVisaCard = $allSupportersVisaCard->whereBetween('age', [$minAge, $maxAge]);
                 // $allSupporters = $allSupporters->where('age', $allSupporters);
                 // dd($allSupporters->get());
             } else {
@@ -238,6 +290,7 @@ class SupportersController extends Controller
             $circleMember = $request->is_circle_member == 'true' ? 1 : 0;
             // dd($circleMember);
             $allSupporters = $allSupporters->where('is_circle_member', $circleMember);
+            $allSupportersVisaCard = $allSupportersVisaCard->where('is_circle_member', $circleMember);
         }
 
         // Filter by CIRLCLE NUMBER
@@ -249,12 +302,14 @@ class SupportersController extends Controller
             $circleNumber = $request->circle_number;
             // dd($circleNumber);
             $allSupporters = $allSupporters->where('circle_number', $circleNumber);
+            $allSupportersVisaCard = $allSupportersVisaCard->where('circle_number', $circleNumber);
         }
         // FILTER BY PHONE NUMBER
         if ($request->phone !== null) {
             $phone = $request->phone;
             // dd($circleNumber);
             $allSupporters = $allSupporters->where('phone', $phone);
+            $allSupportersVisaCard = $allSupportersVisaCard->where('phone', $phone);
         }
 
         // Filter by PAYMENT METHOD
@@ -263,6 +318,7 @@ class SupportersController extends Controller
             $paymentMethod = $request->network;
             // dd($paymentMethod);
             $allSupporters = $allSupporters->where('network', $paymentMethod);
+            $allSupportersVisaCard = $allSupportersVisaCard->where('network', $paymentMethod);
         }
 
         // Filter by SUPPORTER TYPE
@@ -276,6 +332,10 @@ class SupportersController extends Controller
                 $q->where('supporter_type', 'iLIKE', '%'.$supporterType.'%');
                 // $q->orwhere('lastName', 'LIKE', '%'.$keyword.'%');
             });
+            $allSupportersVisaCard = $allSupportersVisaCard->where(function ($q) use($supporterType) {               
+                $q->where('supporter_type', 'iLIKE', '%'.$supporterType.'%');
+                // $q->orwhere('lastName', 'LIKE', '%'.$keyword.'%');
+            });
         }
 
         // Filter by SUPPORTER's FULL NAME
@@ -286,6 +346,10 @@ class SupportersController extends Controller
             // $allSupporters = $allSupporters->where('supporter_type', $supporterType);
             // $allSupporters = $allSupporters->where('full_name', 'like', '%' .  $fullname. '%');
             $allSupporters = $allSupporters->where(function ($q) use($fullname) {               
+                $q->where('full_name', 'iLIKE', '%'.$fullname.'%');
+                // $q->orwhere('lastName', 'LIKE', '%'.$keyword.'%');
+            });
+            $allSupportersVisaCard = $allSupportersVisaCard->where(function ($q) use($fullname) {               
                 $q->where('full_name', 'iLIKE', '%'.$fullname.'%');
                 // $q->orwhere('lastName', 'LIKE', '%'.$keyword.'%');
             });
@@ -319,9 +383,16 @@ class SupportersController extends Controller
                 $q->where('group_name', 'iLIKE', '%'.$supporter_group.'%');
                 // $q->orwhere('lastName', 'LIKE', '%'.$keyword.'%');
             });
+            $allSupportersVisaCard = $allSupportersVisaCard->where(function ($q) use($supporter_group) {               
+                $q->where('group_name', 'iLIKE', '%'.$supporter_group.'%');
+                // $q->orwhere('lastName', 'LIKE', '%'.$keyword.'%');
+            });
         }
 
         $successTotal = count($allSupporters->get());
+
+        $visaCardSuccessTotal = count($allSupportersVisaCard->get());
+        // dd($visaCardSuccessTotal);
 
         $allSupporters = $allSupporters->paginate(100);
 
@@ -398,6 +469,7 @@ class SupportersController extends Controller
             'monthInterval' => $monthInterval,
             'totalKotokoVISACardRevenue' => $totalKotokoVISACardRevenue,
             'realTotalRegisteredSupporters' => $realTotalRegisteredSupporters,
+            'visaCardSuccessTotal' => $visaCardSuccessTotal,
         ]);
     }
 

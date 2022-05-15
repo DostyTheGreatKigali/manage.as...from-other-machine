@@ -330,7 +330,7 @@ input[type="number"] {
                     {{-- <span class="p-2" style="background-color: #6495ED; color: white; font-size: 20px; border-radius: 15px"><strong>Paid Supporter Type: {{ number_format($successTotal, 0, ".", ", ") }}<strong></span>  --}}
                     </div>
                     <div class="text-right mb-3">
-                    <span class="p-2" style="background-color: green; color: white; font-size: 20px; border-radius: 15px"><strong>Paid Visa Card: {{ number_format($successTotal, 0, ".", ", ") }}<strong></span> 
+                    <span class="p-2" style="background-color: green; color: white; font-size: 20px; border-radius: 15px"><strong>Paid Visa Card: {{ number_format($visaCardSuccessTotal, 0, ".", ", ") }}<strong></span> 
                     </div>
 
                     <div class="container d-none">
