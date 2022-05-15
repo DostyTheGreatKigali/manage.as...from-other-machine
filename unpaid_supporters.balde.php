@@ -71,14 +71,14 @@ input[type="number"] {
   <div class="block block-mode-loading-oneui">
                 <div class="block-header block-header-default">
                     <!-- <h3 class="block-title">Supporters' Monthly Contribution</h3> -->
-                    <h3 class="block-title">Supporters</h3>
+                    <h3 class="block-title">Unpaid Supporters</h3>
                     @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 4 )
-                    <div class="regional-supporters-link text-center">
+                    <div class="regional-supporters-link text-center d-none">
                         <a href="{{ url('/admin/dashboard/supporters/regional') }}" class="btn btn-alt-danger">Regional Supporters Totals</a>
                     </div>
                     @endif
                     <div class="block-options">
-                    <a href="{{ url('/admin/dashboard/supporters') }}" style="color: #e40101;" class="btn" >
+                    <a href="{{ url('/admin/dashboard/unpaid-supporters') }}" style="color: #e40101;" class="btn" >
                             <i class="si si-refresh"></i>&nbsp;
                     </a>
                         <!-- <button type="button" style="color: #e40101;" class="btn-block-option" data-toggle="block-option" data-action="state_toggle" data-action-mode="demo">
