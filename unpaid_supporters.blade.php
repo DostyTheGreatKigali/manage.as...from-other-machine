@@ -313,7 +313,7 @@ input[type="number"] {
                    {{-- @if(Auth::user()->role_id == 5) --}}
                     <div class="container d-none">
                     <div class="text-center mb-3">
-                    <span class="p-2" style="background-color: green; color: white; font-size: 20px; border-radius: 15px"><strong>Kotoko VISA Card Total:  GH₵ {{ number_format($totalKotokoVISACardRevenue, 0, ".", ", ") }}<strong></span> 
+                    {{-- <span class="p-2" style="background-color: green; color: white; font-size: 20px; border-radius: 15px"><strong>Kotoko VISA Card Total:  GH₵ {{ number_format($totalKotokoVISACardRevenue, 0, ".", ", ") }}<strong></span>  --}}
                     </div>
                     <div class="text-right mb-3">
                     <span style="font-size: 20px;"> <strong>{{ $monthInterval }} </strong> </span>
@@ -323,13 +323,13 @@ input[type="number"] {
                     {{-- @else --}}
                     <div class="text-right mb-3">
                     <span style="font-size: 20px; margin-bottom: 2rem"> <strong>{{ $monthInterval }} </strong> </span>
-                    <span class="p-2" style="background-color: #6495ED; color: white; font-size: 20px; border-radius: 15px"><strong>Total Registered: {{ number_format($realTotalRegisteredSupporters, 0, ".", ", ") }}<strong></span> 
+                    <span class="p-2" style="background-color: #6495ED; color: white; font-size: 20px; border-radius: 15px"><strong>Total Unpaid: {{ number_format($realTotalRegisteredSupporters, 0, ".", ", ") }}<strong></span> 
                     </div>
-                    <div class="text-right mb-3">
+                    <div class="text-right mb-3 d-none">
                     <span class="p-2" style="background-color: #000; color: white; font-size: 20px; border-radius: 15px"><strong>Paid Supporter Type: {{ number_format($successTotal, 0, ".", ", ") }}<strong></span> 
                     {{-- <span class="p-2" style="background-color: #6495ED; color: white; font-size: 20px; border-radius: 15px"><strong>Paid Supporter Type: {{ number_format($successTotal, 0, ".", ", ") }}<strong></span>  --}}
                     </div>
-                    <div class="text-right mb-3">
+                    <div class="text-right mb-3 d-none">
                     <span class="p-2" style="background-color: green; color: white; font-size: 20px; border-radius: 15px"><strong>Paid Visa Card: {{ number_format($visaCardSuccessTotal, 0, ".", ", ") }}<strong></span> 
                     </div>
                     <div class="text-left mb-3">
